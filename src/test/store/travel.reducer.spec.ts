@@ -264,7 +264,7 @@ describe('測試Travel Reducer', ()=>{
 
     it('執行搜尋(是否免費)', ()=>{
       
-      const isFree = false;
+      const isFree = 0;
       const action = new fromActions.FilterAttractionsAction();
       const locationsForUI = mapLocationsToCollection(remoteTestData.result.records);
       const previousState:TravelInfoState = {
@@ -296,7 +296,7 @@ describe('測試Travel Reducer', ()=>{
 
     it('執行搜尋(是否全天)', ()=>{
       
-      const isAllDay = false;
+      const isAllDay = 0;
       const action = new fromActions.FilterAttractionsAction();
       const locationsForUI = mapLocationsToCollection(remoteTestData.result.records);
       const previousState:TravelInfoState = {

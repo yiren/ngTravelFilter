@@ -15,8 +15,8 @@ export interface TravelInfoState {
   categoryId:number;
   keyword:string;
   locationId:number;
-  isFree:boolean;
-  isAllDay:boolean;
+  isFree:number;
+  isAllDay:number;
 }
 export const initialState: TravelInfoState = {
   entities:null,
