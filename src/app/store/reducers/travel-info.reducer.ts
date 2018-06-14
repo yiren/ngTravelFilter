@@ -2,18 +2,18 @@ import * as _ from 'lodash';
 import * as fromActions from '../actions/travel-info.actions';
 import * as moment from 'moment';
 
-import { Action } from '@ngrx/store';
-import { Attraction } from './../../shared/model/attraction.model';
+import { Action, createSelector } from '@ngrx/store';
 
-;
+import { AppState } from '../index';
+import { Attraction } from './../../shared/model/attraction.model';
 
 export interface TravelInfoState {
   entities:{[id:string]:Attraction};
   isLoading:boolean;
   isLoaded:boolean;
   locationsForUI:{id:number, text:string}[],
-  keyword:string;
   categoryId:number;
+  keyword:string;
   locationId:number;
   isFree:boolean;
   isAllDay:boolean;
@@ -23,12 +23,34 @@ export const initialState: TravelInfoState = {
   isLoaded:false,
   isLoading:false,
   locationsForUI:null,
-  keyword:null,
-  categoryId:undefined,
+  categoryId:null,
+  keyword:'',
   locationId:null,
   isFree:null,
   isAllDay:null
 };
+
+//Selector
+export const getLocationsForUI = (state:TravelInfoState) => state.locationsForUI;
+export const getAttractionsEntities= (state:TravelInfoState) =>state.entities;
+export const selectTravelState=(state:AppState) =>state.travelInfo;
+
+export const selectAttractionsEntities= createSelector(
+  selectTravelState,
+  getAttractionsEntities
+);
+
+export const selectAllAttractions =createSelector(
+  selectAttractionsEntities,
+  (entities:{[id:string]:Attraction}) => _.values(entities)
+);
+
+export const selectLocationsForUI = createSelector(
+  selectTravelState,
+  getLocationsForUI
+);
+
+
 
 export function mapAttractionsToEntities(attractions:Attraction[])
 {
@@ -49,26 +71,65 @@ export function mapLocationsToCollection(attractions:Attraction[]){
   const uniqZones= _.uniq(allZones);
     //console.log(uniqZones);
   let idgen = 0;
-  return uniqZones.map(zone=>{
-      idgen+=1;
-      return {
-        id: idgen,
-        text: zone
-      };
-    });
+  const locations=uniqZones.map(zone=>{
+    idgen+=1;
+    return {
+      id: idgen,
+      text: zone
+    };
+  });
+
+  return [{id:0, text:'All'}, ...locations];
 }
 
-export function filterEntitiesByKeyword(entities:{[id:string]:Attraction}, keyword:string){
+export function filterEntitiesByParams(
+  entities:{[id:string]:Attraction}, 
+  locations:{id:number, text:string}[], 
+  locationId:number,
+  isFree,
+  isAllDay,
+  keyword:string
+){
   let filteredData = _.values(entities);
-  filteredData=filteredData.filter(s=>s.Name.includes(keyword) || s.Description.includes(keyword));
-  return filteredData;
-}
-
-export function filterEntitiesByLocation(entities:{[id:string]:Attraction}, locations:{id:number, text:string}[], locationId:number){
-  let filteredData = _.values(entities);
-  const locationText = locations.find((loc) => loc.id === locationId);
-  filteredData = filteredData.filter(s => s.Zone.includes(locationText.text));
-  return filteredData;
+  console.log(isAllDay);
+  if(isAllDay != null || isAllDay == 2){
+    if(isAllDay == 1){
+      filteredData = filteredData.filter((attr)=>attr.Opentime.includes('全天候開放'));
+      
+    } 
+    if(isAllDay == 0)
+    {
+      filteredData = filteredData.filter((attr)=>!(attr.Opentime.includes('全天候開放')));
+      
+    }
+  }
+  
+  if(isFree !== null){
+    if(isFree ==1){    
+      filteredData=filteredData.filter((attr)=>!(attr.Ticketinfo.includes('票') || attr.Ticketinfo.includes('元')));
+      console.log(isFree)
+    } 
+    if(isFree ==0){
+      console.log(isFree)
+      filteredData=filteredData.filter((attr)=>attr.Ticketinfo.includes('票') || attr.Ticketinfo.includes('元'));
+    }
+  }
+  //console.log(filteredData);
+  if(locationId){
+    const location=locations.find((l)=>l.id == locationId)
+    filteredData=filteredData.filter((attr)=>attr.Zone.includes(location.text));
+  }
+  
+  if (keyword){
+    if (keyword.trim() != '') {
+    filteredData = filteredData.filter((attr)=>
+    attr.Name.toLowerCase().includes(keyword.trim().toLowerCase()) ||
+    attr.Description.toLowerCase().includes(keyword.trim().toLowerCase())
+    );
+    }
+  }
+  console.log(filteredData);
+  return mapAttractionsToEntities(filteredData);
 }
 
 export function travelReducer(state = initialState, action: fromActions.TravelInfoActions): TravelInfoState {
@@ -96,7 +157,8 @@ export function travelReducer(state = initialState, action: fromActions.TravelIn
     }
 
     case (fromActions.TravelInfoActionTypes.GenerateLocationsStateAction):{
-      const data = action.payload;
+      const entities = _.cloneDeep(state.entities);
+      const data = _.values(entities);
       const locationsForUI = mapLocationsToCollection(data);
       return {
         ...state,
@@ -108,7 +170,7 @@ export function travelReducer(state = initialState, action: fromActions.TravelIn
       const keyword = action.payload;
       return {
         ...state,
-        keyword:keyword
+        keyword
       };
     }
 
@@ -136,7 +198,24 @@ export function travelReducer(state = initialState, action: fromActions.TravelIn
       };
     }
 
-    
+    case (fromActions.TravelInfoActionTypes.FilterAttractionsAction):{
+
+      const entities:{[id:number]:Attraction} = _.cloneDeep(state.entities);
+      const {locationsForUI} = state;
+      const {keyword} = state;
+      const {locationId} = state;
+      const {isFree} = state;
+      const {isAllDay} = state;
+
+      const filteredEntities = filterEntitiesByParams(entities,locationsForUI, locationId, isFree, isAllDay, keyword);
+      
+      return {
+        ...state,
+        entities:filteredEntities
+      }
+    }
+
+
 
     default:
       return state;

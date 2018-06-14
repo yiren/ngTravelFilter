@@ -1,18 +1,24 @@
 import * as _ from 'lodash';
 import * as fromActions from './../../app/store/actions/travel-info.actions';
 
-import { TravelInfoState, filterEntitiesByKeyword, filterEntitiesByLocation, initialState, mapAttractionsToEntities, mapLocationsToCollection, travelReducer } from '../../app/store/reducers/travel-info.reducer';
+import {
+  TravelInfoState,
+  filterEntitiesByParams,
+  initialState,
+  mapAttractionsToEntities,
+  mapLocationsToCollection,
+  travelReducer
+} from '../../app/store/reducers/travel-info.reducer';
 
 import { Attraction } from '../../app/shared/model/attraction.model';
-import { mapLocationsToCollection } from './../../app/store/reducers/travel-info.reducer';
 import { remoteTestData } from './../service/test.data';
 
 describe('測試Travel Reducer', ()=>{
 
   let seedEntities;
-
+  const testData = remoteTestData.result.records;
   beforeEach(()=>{
-    const testData = remoteTestData.result.records;
+    
     seedEntities = mapAttractionsToEntities(testData);
     //console.log(seedEntities);
   });
@@ -59,10 +65,11 @@ describe('測試Travel Reducer', ()=>{
     });
 
     it('產生location state給Dropdown', ()=>{
-      const remoteData=remoteTestData.result.records;
-      const action = new fromActions.GenerateLocationsStateAction(remoteData);
+      
+      const action = new fromActions.GenerateLocationsStateAction();
       const previousState={
         ...initialState,
+        entities:seedEntities,
         isLoaded:false,
         isLoading:true
       };
@@ -71,7 +78,7 @@ describe('測試Travel Reducer', ()=>{
       const state = travelReducer(previousState, action);
 
 
-      const locations=mapLocationsToCollection(remoteData);
+      const locations=mapLocationsToCollection(testData);
 
       const expected: TravelInfoState = {
         ...previousState,
@@ -157,29 +164,167 @@ describe('測試Travel Reducer', ()=>{
       expect(state).toEqual(expected);
     });
 
-    it('執行搜尋', ()=>{
-    
-      const action = new fromActions.PerformSearchAction();
+    it('執行搜尋(無搜尋條件)', ()=>{
+      const action = new fromActions.FilterAttractionsAction();
       const locationsForUI = mapLocationsToCollection(remoteTestData.result.records);
       const previousState:TravelInfoState={
         ...initialState,
         entities:seedEntities,
         locationsForUI,
-        isAllDay:true,
-        isFree:false,
-        locationId:7,
-        keyword:'館'
+        isAllDay:initialState.isAllDay,
+        isFree:initialState.isFree,
+        locationId:initialState.locationId,
+        keyword:initialState.keyword
       };
 
       const state = travelReducer(previousState, action);
 
+
+      const entities:{[id:number]:Attraction} = _.cloneDeep(seedEntities);
+
+      
+      const {keyword} = previousState;
+      const {locationId} = previousState;
+      const {isFree} = previousState;
+      const {isAllDay} = previousState;
+
+      const filteredEntities = filterEntitiesByParams(entities,locationsForUI,locationId, isFree,isAllDay,keyword);
+
       const expected: TravelInfoState = {
         ...previousState,
+        entities:filteredEntities
       };
 
       expect(state).toEqual(expected);
     });
 
+    it('執行搜尋(關鍵字)', ()=>{
+      
+      const keyword='館'
+      const action = new fromActions.FilterAttractionsAction();
+      const locationsForUI = mapLocationsToCollection(remoteTestData.result.records);
+      const previousState:TravelInfoState={
+        ...initialState,
+        entities:seedEntities,
+        locationsForUI,
+        isAllDay:initialState.isAllDay,
+        isFree:initialState.isFree,
+        locationId:initialState.locationId,
+        keyword
+      };
+
+      const state = travelReducer(previousState, action);
+
+      const entities=_.cloneDeep(previousState.entities);
+      const {locationId} = previousState;
+      const {isFree} = previousState;
+      const {isAllDay} = previousState;
+
+      const filteredEntities = filterEntitiesByParams(entities,locationsForUI,locationId, isFree,isAllDay,keyword);
+
+      const expected: TravelInfoState = {
+        ...previousState,
+        entities:filteredEntities
+      };
+
+      expect(state).toEqual(expected);
+    });
+
+    it('執行搜尋(地區)', ()=>{
+      
+      const locationId = 3;
+      const action = new fromActions.FilterAttractionsAction();
+      const locationsForUI = mapLocationsToCollection(remoteTestData.result.records);
+      const previousState:TravelInfoState = {
+        ...initialState,
+        entities:seedEntities,
+        locationsForUI,
+        isAllDay:initialState.isAllDay,
+        isFree:initialState.isFree,
+        locationId,
+        keyword:initialState.keyword
+      };
+
+      const state = travelReducer(previousState, action);
+
+      const entities:{[id:number]:Attraction} = _.cloneDeep(seedEntities);
+
+      const {keyword} = previousState;
+      const {isFree} = previousState;
+      const {isAllDay} = previousState;
+
+      const filteredEntities = filterEntitiesByParams(entities,locationsForUI,locationId, isFree,isAllDay,keyword);
+      const expected: TravelInfoState = {
+        ...previousState,
+        entities:filteredEntities
+      };
+
+      expect(state).toEqual(expected);
+    });
+
+    it('執行搜尋(是否免費)', ()=>{
+      
+      const isFree = false;
+      const action = new fromActions.FilterAttractionsAction();
+      const locationsForUI = mapLocationsToCollection(remoteTestData.result.records);
+      const previousState:TravelInfoState = {
+        ...initialState,
+        entities:seedEntities,
+        locationsForUI,
+        isAllDay:initialState.isAllDay,
+        isFree,
+        locationId:initialState.locationId,
+        keyword:initialState.keyword
+      };
+
+      const state = travelReducer(previousState, action);
+
+      const entities:{[id:number]:Attraction} = _.cloneDeep(seedEntities);
+
+      const {keyword} = previousState;
+      const {locationId} =previousState;
+      const {isAllDay} = previousState;
+
+      const filteredEntities = filterEntitiesByParams(entities,locationsForUI,locationId, isFree,isAllDay,keyword);
+      const expected: TravelInfoState = {
+        ...previousState,
+        entities:filteredEntities
+      };
+      
+      expect(state).toEqual(expected);
+    });
+
+    it('執行搜尋(是否全天)', ()=>{
+      
+      const isAllDay = false;
+      const action = new fromActions.FilterAttractionsAction();
+      const locationsForUI = mapLocationsToCollection(remoteTestData.result.records);
+      const previousState:TravelInfoState = {
+        ...initialState,
+        entities:seedEntities,
+        locationsForUI,
+        isAllDay,
+        isFree:initialState.isFree,
+        locationId:initialState.locationId,
+        keyword:initialState.keyword
+      };
+
+      const state = travelReducer(previousState, action);
+
+      const entities:{[id:number]:Attraction} = _.cloneDeep(seedEntities);
+
+      const {keyword} = previousState;
+      const {locationId} =previousState;
+      const {isFree} = previousState;
+
+      const filteredEntities = filterEntitiesByParams(entities,locationsForUI,locationId, isFree,isAllDay,keyword);
+      const expected: TravelInfoState = {
+        ...previousState,
+        entities:filteredEntities
+      };
+
+      expect(state).toEqual(expected);
+    });
   });
 
 

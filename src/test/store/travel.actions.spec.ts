@@ -24,12 +24,11 @@ describe('測試travel action', ()=>{
     });
 
     it('動態產生區域選單資料Action', () => {
-      const data=remoteTestData.result.records;
-      const action=new fromActions.GenerateLocationsStateAction(data);
+      //const data=remoteTestData.result.records;
+      const action=new fromActions.GenerateLocationsStateAction();
 
       expect({...action}).toEqual({
         type:fromActions.TravelInfoActionTypes.GenerateLocationsStateAction,
-        payload:data
       });
     });
   });

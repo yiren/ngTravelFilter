@@ -34,7 +34,7 @@ describe('測試TravelInfo服務', () => {
                 map((data:any) => data.result.records)
               )
               .subscribe((data:Attraction[]) => {
-               // console.log(data)
+                //console.log(data.filter((d)=>d.Ticketinfo))
                 expect(data).toEqual(testData);
               });
     // const req = httpTestController.expectOne(API_URL);
