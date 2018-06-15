@@ -90,7 +90,7 @@ export function filterEntitiesByParams(
   keyword:string
 ){
   let filteredData = _.values(entities);
-  console.log(isAllDay);
+  //console.log(isAllDay);
   if(isAllDay != null || isAllDay == 2){
     if(isAllDay == 1){
       filteredData = filteredData.filter((attr)=>attr.Opentime.includes('全天候開放'));
@@ -127,7 +127,7 @@ export function filterEntitiesByParams(
     );
     }
   }
-  console.log(filteredData);
+  //console.log(filteredData);
   return mapAttractionsToEntities(filteredData);
 }
 

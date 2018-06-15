@@ -2,7 +2,6 @@ mat-placeholder {
     color: white;
 }
 
-// Changes the underline and placeholder colour before input is selected
-/deep/ .mat-input-underline {
-    background-color: white;
+mat-chip {
+    max-width: 150px;
 }

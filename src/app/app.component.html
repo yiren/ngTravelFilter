@@ -20,9 +20,9 @@
     </div>
 
     <div fxFlex="450px">
-        <mat-form-field>
-            <input matInput placeholder="關鍵字">
-        </mat-form-field>
+        <i class="fas fa-search"></i>
+        <input class="keyword-input" placeholder="關鍵字">
+
     </div>
 </div>
 
@@ -32,9 +32,8 @@
     </div>
 
     <div fxFlex="780px">
-        <mat-form-field>
-            <input matInput placeholder="關鍵字">
-        </mat-form-field>
+        <i class="fas fa-search"></i>
+        <input class="keyword-input" placeholder="關鍵字">
     </div>
 </div>
 
@@ -228,7 +227,14 @@
         <div class="filter-indicator">
             <h3>顯示篩選結果:{{getCount()}}筆</h3>
             <div>
+                <mat-chip-list fxLayout fxLayoutGap="5px">
+                    <mat-chip (click)="clearFilterByTag(chip)" *ngFor="let chip of chips" color="primary">
+                        {{chip.text}}
+                        <mat-icon>clear</mat-icon>
+                    </mat-chip>
 
+
+                </mat-chip-list>
             </div>
         </div>
         <div *ngFor="let spot of (attractions$ | async)">
