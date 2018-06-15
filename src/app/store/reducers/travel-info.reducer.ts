@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
 import * as fromActions from '../actions/travel-info.actions';
-import * as moment from 'moment';
 
 import { Action, createSelector } from '@ngrx/store';
 

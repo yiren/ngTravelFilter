@@ -39,17 +39,17 @@ export class SearchByLocationAction implements Action {
 
 export class SearchByIsFreeAction implements Action {
   readonly type = TravelInfoActionTypes.SearchByIsFreeAction;
-  constructor(public payload:boolean){}
+  constructor(public payload:number){}
 }
 
 export class SearchByIsAllDayAction implements Action {
   readonly type = TravelInfoActionTypes.SearchByIsAllDayAction;
-  constructor(public payload:boolean){}
+  constructor(public payload:number){}
 }
 
 export class SearchByCategoryAction implements Action {
   readonly type = TravelInfoActionTypes.SearchByCategoryAction;
-  constructor(public payload:number){}
+  constructor(public payload:boolean){}
 }
 
 export class FilterAttractionsAction implements Action {

@@ -1,8 +1,8 @@
 import * as fromTravelActions from './store/actions/travel-info.actions';
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 import { selectAllAttractions, selectLocationsForUI } from './store/reducers/travel-info.reducer';
 
 import { AppState } from './store/index';
@@ -13,17 +13,21 @@ import { Store } from '@ngrx/store';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  encapsulation:ViewEncapsulation.None
 })
 export class AppComponent implements OnInit{
-  
+
   form:FormGroup;
   attractions$:Observable<Attraction[]>;
   locations$:Observable<{id:number, text:string}[]>;
-
+  searchResultCount:number;
   ngOnInit(){
     this.store.dispatch(new fromTravelActions.LoadAttractionsAction());
-    this.attractions$ = this.store.select(selectAllAttractions);
+    this.attractions$ = this.store.select(selectAllAttractions)
+                            .pipe(
+                              tap(attractions=>this.searchResultCount=attractions.length)
+                            );
     this.locations$ = this.store.select(selectLocationsForUI);
     this.form = this.fb.group({
       'keyword': '',
@@ -46,7 +50,7 @@ export class AppComponent implements OnInit{
       isAllDay => //console.log(isAllDay)
       this.store.dispatch(new fromTravelActions.SearchByIsAllDayAction(isAllDay))
     );
-    
+
     this.form.controls['keyword'].valueChanges.pipe(
       debounceTime(500),
       distinctUntilChanged()
@@ -58,11 +62,14 @@ export class AppComponent implements OnInit{
     private fb:FormBuilder,
     private store:Store<AppState>
   ){}
-  
+
   setLocation(locationId:number) {
     this.store.dispatch(new fromTravelActions.SearchByLocationAction(locationId));
   }
 
+  getCount(){
+    return this.searchResultCount;
+  }
   setIsFree(isFree) {
     this.store.dispatch(new fromTravelActions.SearchByIsFreeAction(isFree));
   }
