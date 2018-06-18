@@ -1,39 +1,40 @@
 <div fxHide fxShow.xs class="header" fxLayout fxLayoutAlign="center center" fxLayoutGap="20px">
     <div>
-        <h2 class="website-label">Have Fun</h2>
+        <p class="website-label">HaveFun</p>
     </div>
-
-    <div fxHide.xs fxFlex="450px">
-        <mat-form-field>
-            <input matInput placeholder="關鍵字">
-        </mat-form-field>
-    </div>
+ 
 </div>
 <div fxLayoutAlign="center" fxShow.xs fxHide>
-    <mat-form-field>
-        <input matInput placeholder="關鍵字">
-    </mat-form-field>
+    <div class="keyword-block-xs">
+        <i class="fas fa-search"></i>
+        <input class="keyword-icon-spacing keyword-input-xs" placeholder="關鍵字" #xskeyword>
+    </div>
 </div>
 <div fxHide fxShow.sm fxShow.md class="header" fxLayout fxLayoutAlign="center center" fxLayoutGap="20px">
     <div fxFlex="250px">
-        <h2 class="website-label">Have Fun</h2>
+        <span class="website-label">HaveFun</span>
     </div>
 
     <div fxFlex="450px">
-        <i class="fas fa-search"></i>
-        <input class="keyword-input" placeholder="關鍵字">
+        <div class="keyword-block">
+            <i class="fas fa-search"></i>
+            <input class="keyword-icon-spacing keyword-input" placeholder="關鍵字" #mdkeyword>
+        </div>
+        
 
     </div>
 </div>
 
-<div fxHide fxShow.lg class="header" fxLayout fxLayoutAlign="center center" fxLayoutGap="20px">
+<div fxHide fxShow.lg fxShow.gt-lg class="header" fxLayout fxLayoutAlign="center center" fxLayoutGap="20px">
     <div fxFlex="250px">
-        <h2 class="website-label">Have Fun</h2>
+        <p class="website-label">HaveFun</p>
     </div>
 
     <div fxFlex="780px">
-        <i class="fas fa-search"></i>
-        <input class="keyword-input" placeholder="關鍵字">
+            <div class="keyword-block">
+                    <i class="fas fa-search"></i>
+                    <input class="keyword-icon-spacing keyword-input" placeholder="關鍵字">
+                </div>
     </div>
 </div>
 
@@ -82,32 +83,32 @@
             <mat-radio-group fxLayout="column" formControlName="isAllDay">
                 <mat-radio-button value="null" checked="true">All</mat-radio-button>
                 <mat-radio-button value="1">全天開放</mat-radio-button>
-                <mat-radio-button value="0">其他</mat-radio-button>
+                <mat-radio-button value="0">其他時段</mat-radio-button>
             </mat-radio-group>
         </mat-expansion-panel>
     </mat-accordion>
 
     <div fxLayout="column" fxLayoutGap="25px">
         <div fxLayoutAlign="center" class="filter-indicator">
-            <h3>顯示篩選結果:筆</h3>
+            <h5>顯示篩選結果:{{getCount()}}筆</h5>
             <div>
 
             </div>
         </div>
         <div fxLayoutAlign="center" *ngFor="let spot of (attractions$ | async)">
-            <div class="card-pad" fxLayout="column">
+            <div class="f2e-card-pad" fxLayout="column">
                 <div class="card-image-pad" fxLayoutAlign="center center">
                     <img class="image-size-pad" [src]="spot.Picture1" alt="img">
                 </div>
-                <div class="card-content">
-                    <div class="card-title">{{spot.Name}}</div>
-                    <p class="card-description">{{spot.Description.substring(0,95)}}...</p>
+                <div class="f2e-card-content-pad">
+                    <div class="f2e-card-title">{{spot.Name}}</div>
+                    <p class="f2e-card-description">{{spot.Description.substring(0,95)}}...</p>
                     <p>
-                        <span class="gov-label">{{spot.Gov}}</span>
-                        <span class="card-tag">{{spot.Zone}}</span>
+                        <span class="gov-label">高雄市政府(觀光局)</span>
+                        <span class="f2e-card-tag">{{getCategory(spot.Class1)}}</span>
                     </p>
-
-                    <div class="card-footer" fxLayout fxLayoutGap="10px">
+                    
+                    <div class="f2e-card-footer" fxLayout="column" fxLayoutGap="10px">
                         <div>
                             <span class="fas fa-map-marker-alt"></span>
                             <span class="icon-spacing">{{spot.Zone}}</span>
@@ -127,55 +128,63 @@
 <div fxHide fxShow.md fxShow.sm [formGroup]="form" fxLayout fxLayoutAlign="center" fxLayoutGap="20px">
     <div fxFlex="250px" fxLayout="column" fxLayoutGap="1px">
         <div class="filter-block">
-            <h3>區域</h3>
-            <mat-form-field>
-                <mat-select placeholder="請選擇區" formControlName="locationId">
-                    <mat-option *ngFor="let location of (locations$ | async )" [value]="location.id">
-                        {{location.text}}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
+            <h5>地區</h5>
+            
+
+            <select formControlName="locationId" class="form-control">
+                <option  *ngFor="let location of (locations$ | async )" [value]="location.id">{{location.text}}</option>
+            </select>
         </div>
         <div class="filter-block">
-            <h3>是否免費</h3>
+            <h5>是否免費</h5>
             <mat-radio-group fxLayout="column" fxLayoutGap="5px" formControlName="isFree">
-                <mat-radio-button value="null" checked="true">All</mat-radio-button>
-                <mat-radio-button value="1">免費</mat-radio-button>
-                <mat-radio-button value="0">收費</mat-radio-button>
+                <mat-radio-button color="primary" value="0" checked="true">All</mat-radio-button>
+                <mat-radio-button color="primary" value="1">免費</mat-radio-button>
+                <mat-radio-button color="primary" value="2">收費</mat-radio-button>
             </mat-radio-group>
         </div>
 
         <section class="filter-block">
-            <h4>是否全天開放</h4>
+            <h5>是否全天開放</h5>
             <mat-radio-group fxLayout="column" fxLayoutGap="5px" formControlName="isAllDay">
-                <mat-radio-button value="null" checked="true">All</mat-radio-button>
-                <mat-radio-button value="1">全天開放</mat-radio-button>
-                <mat-radio-button value="0">其他</mat-radio-button>
+                <mat-radio-button color="primary" value="0" checked="true">All</mat-radio-button>
+                <mat-radio-button color="primary" value="1">全天開放</mat-radio-button>
+                <mat-radio-button color="primary" value="2">其他時段</mat-radio-button>
             </mat-radio-group>
         </section>
 
     </div>
     <div fxFlex="450px" fxLayout="column" fxLayoutGap="25px">
         <div class="filter-indicator">
-            <h3>顯示篩選結果:{{getCount()}}筆</h3>
+            <h5>顯示篩選結果:{{getCount()}}筆</h5>
             <div>
-
+                <!--   
+                <mat-chip-list fxLayout fxLayoutGap="5px">
+                            <mat-chip color="primary" selected="true" (click)="clearFilterByTag(chip)"  *ngFor="let chip of chips">
+                                {{chip.text}}
+                                <span class="far fa-times-circle" style="display: inline-block; margin-left:5px"></span>
+                            </mat-chip>
+        
+        
+                        </mat-chip-list>
+                    -->
             </div>
         </div>
-        <div *ngFor="let spot of (attractions$ | async)">
-            <div class="card-pad" fxLayout="column">
-                <div class="card-image-pad" fxLayoutAlign="center center">
+        
+        <div *ngFor="let spot of attractions">
+            <div class="f2e-card-pad" fxLayout="column">
+                <div class="f2e-card-image-pad" fxLayoutAlign="center center">
                     <img class="image-size-pad" [src]="spot.Picture1" alt="img">
                 </div>
-                <div class="card-content">
-                    <div class="card-title">{{spot.Name}}</div>
-                    <p class="card-description">{{spot.Description.substring(0,60)}}...</p>
+                <div class="f2e-card-content-pad">
+                    <div class="f2e-card-title">{{spot.Name}}</div>
+                    <p class="f2e-card-description">{{spot.Description.substring(0,60)}}...</p>
                     <p>
-                        <span class="gov-label">{{spot.Gov}}</span>
-                        <span class="card-tag">{{spot.Zone}}</span>
+                        <span class="gov-label">高雄市政府(觀光局)</span>
+                        <span class="f2e-card-tag">{{getCategory(spot.Class1)}}</span>
                     </p>
-
-                    <div class="card-footer" fxLayout="column" fxLayoutGap="10px">
+                    
+                    <div class="f2e-card-footer" fxLayout="column" fxLayoutGap="10px">
                         <div>
                             <span class="fas fa-map-marker-alt"></span>
                             <span class="icon-spacing">{{spot.Zone}}</span>
@@ -189,14 +198,22 @@
             </div>
 
         </div>
+
+        <div fxLayoutAlign="end">
+                <pagination [totalItems]="getCount()" [itemsPerPage]="itemsPerPage" 
+                    previousText="&laquo;" nextText="&raquo;"
+                    (pageChanged)="changePage($event)" >
+    
+                </pagination>
+            </div>
     </div>
 </div>
 
-<div fxHide fxShow.lg [formGroup]="form" fxLayout fxLayoutAlign="center" fxLayoutGap="20px">
+<div fxHide fxShow.lg fxShow.gt-lg [formGroup]="form" fxLayout fxLayoutAlign="center" fxLayoutGap="20px">
     <div fxFlex="250px" fxLayout="column" fxLayoutGap="1px">
         <div class="filter-block">
             <h3>請選擇區</h3>
-            <mat-form-field>
+            <mat-form-field class="dropdown">
                 <mat-select placeholder="請選擇區" formControlName="locationId">
                     <mat-option *ngFor="let location of (locations$ | async )" [value]="location.id">
                         {{location.text}}
@@ -218,7 +235,7 @@
             <mat-radio-group fxLayout="column" fxLayoutGap="5px" formControlName="isAllDay">
                 <mat-radio-button value="null" checked="true">All</mat-radio-button>
                 <mat-radio-button value="1">全天開放</mat-radio-button>
-                <mat-radio-button value="0">其他</mat-radio-button>
+                <mat-radio-button value="0">其他時段</mat-radio-button>
             </mat-radio-group>
         </section>
 
@@ -227,6 +244,7 @@
         <div class="filter-indicator">
             <h3>顯示篩選結果:{{getCount()}}筆</h3>
             <div>
+                <!--
                 <mat-chip-list fxLayout fxLayoutGap="5px">
                     <mat-chip (click)="clearFilterByTag(chip)" *ngFor="let chip of chips" color="primary">
                         {{chip.text}}
@@ -235,22 +253,23 @@
 
 
                 </mat-chip-list>
+                -->
             </div>
         </div>
         <div *ngFor="let spot of (attractions$ | async)">
-            <div class="card" fxLayout>
-                <div class="card-image" fxLayoutAlign="center center">
-                    <img class="image-size" [src]="spot.Picture1" alt="img">
+            <div class="f2e-card" fxLayout>
+                <div class="f2e-card-image" fxLayoutAlign="center center">
+                    <img [src]="spot.Picture1" alt="img">
                 </div>
-                <div class="card-content">
-                    <div class="card-title">{{spot.Name}}</div>
-                    <p class="card-description">{{spot.Description.substring(0,100)}}...</p>
+                <div class="f2e-card-content">
+                    <p class="f2e-card-title">{{spot.Name}}</p>
+                    <p class="f2e-card-description">{{spot.Description.substring(0,100)}}...</p>
                     <p>
                         <span class="gov-label">{{spot.Gov}}</span>
                         <span class="card-tag">{{spot.Zone}}</span>
                     </p>
 
-                    <div class="card-footer" fxLayout fxLayoutGap="10px">
+                    <div class="f2e-card-footer" fxLayout fxLayoutGap="10px">
                         <div>
                             <span class="fas fa-map-marker-alt"></span>
                             <span class="icon-spacing">{{spot.Zone}}</span>

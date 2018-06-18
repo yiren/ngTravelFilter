@@ -127,7 +127,7 @@ describe('測試Travel Reducer', ()=>{
     });
 
     it('set 是否免費 state', ()=>{
-      const isFree=true;
+      const isFree=1;
 
       const action = new fromActions.SearchByIsFreeAction(isFree);
 
@@ -146,7 +146,7 @@ describe('測試Travel Reducer', ()=>{
     });
 
     it('set 是否全天 state', ()=>{
-      const isAllDay = true;
+      const isAllDay = 1;
 
       const action = new fromActions.SearchByIsAllDayAction(isAllDay);
 

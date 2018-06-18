@@ -16,6 +16,7 @@ export interface TravelInfoState {
   locationId:number;
   isFree:number;
   isAllDay:number;
+  currentPage:number
 }
 export const initialState: TravelInfoState = {
   entities:null,
@@ -24,14 +25,16 @@ export const initialState: TravelInfoState = {
   locationsForUI:null,
   categoryId:null,
   keyword:'',
-  locationId:null,
-  isFree:null,
-  isAllDay:null
+  locationId:0,
+  isFree:0,
+  isAllDay:0,
+  currentPage:1
 };
 
 //Selector
 export const getLocationsForUI = (state:TravelInfoState) => state.locationsForUI;
 export const getAttractionsEntities= (state:TravelInfoState) =>state.entities;
+export const getCurrentPage= (state:TravelInfoState) =>state.currentPage;
 export const selectTravelState=(state:AppState) =>state.travelInfo;
 
 export const selectAttractionsEntities= createSelector(
@@ -49,7 +52,10 @@ export const selectLocationsForUI = createSelector(
   getLocationsForUI
 );
 
-
+export const selectCurrentPage= createSelector(
+  selectTravelState,
+  getCurrentPage
+)
 
 export function mapAttractionsToEntities(attractions:Attraction[])
 {
@@ -91,29 +97,30 @@ export function filterEntitiesByParams(
 ){
   let filteredData = _.values(entities);
   //console.log(isAllDay);
-  if(isAllDay != null || isAllDay == 2){
+  if(isAllDay != 0){
     if(isAllDay == 1){
       filteredData = filteredData.filter((attr)=>attr.Opentime.includes('全天候開放'));
       
     } 
-    if(isAllDay == 0)
+    if(isAllDay == 2)
     {
       filteredData = filteredData.filter((attr)=>!(attr.Opentime.includes('全天候開放')));
       
     }
   }
   
-  if(isFree !== null){
+  if(isFree != 0){
     if(isFree ==1){    
       filteredData=filteredData.filter((attr)=>!(attr.Ticketinfo.includes('票') || attr.Ticketinfo.includes('元')));
-      console.log(isFree)
+     // console.log(isFree)
     } 
-    if(isFree ==0){
-      console.log(isFree)
+    if(isFree ==2){
+     // console.log(isFree)
       filteredData=filteredData.filter((attr)=>attr.Ticketinfo.includes('票') || attr.Ticketinfo.includes('元'));
     }
   }
   //console.log(filteredData);
+  //console.log(locationId);
   if(locationId){
     const location=locations.find((l)=>l.id == locationId)
     filteredData=filteredData.filter((attr)=>attr.Zone.includes(location.text));
@@ -194,6 +201,14 @@ export function travelReducer(state = initialState, action: fromActions.TravelIn
       return {
         ...state,
         isAllDay
+      };
+    }
+
+    case (fromActions.TravelInfoActionTypes.SetCurrentPageAction):{
+      const currentPage = action.payload;
+      return {
+        ...state,
+        currentPage
       };
     }
 

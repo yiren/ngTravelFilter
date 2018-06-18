@@ -57,7 +57,7 @@ describe('測試travel action', ()=>{
     });
 
     it('是否全天開放Action', ()=>{
-      const isAllDay=true;
+      const isAllDay=1;
       const action= new fromActions.SearchByIsAllDayAction(isAllDay);
 
       expect({...action}).toEqual({
@@ -68,7 +68,7 @@ describe('測試travel action', ()=>{
 
 
     it('是否收費Action', ()=>{
-      const isFree=false;
+      const isFree=0;
       const action= new fromActions.SearchByIsFreeAction(isFree);
 
       expect({...action}).toEqual({

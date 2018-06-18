@@ -21,7 +21,7 @@ import { StoreModule } from '@ngrx/store';
 import { TravelInfoEffects } from './store/effects/travel-info.effects';
 import { TravelInfoService } from './shared/services/travel.service';
 import { environment } from '../environments/environment';
-
+import { PaginationModule } from 'ngx-bootstrap/pagination';
 @NgModule({
   declarations: [
     AppComponent
@@ -42,7 +42,8 @@ import { environment } from '../environments/environment';
     MatIconModule,
     MatRadioModule,
     MatSelectModule,
-    MatExpansionModule
+    MatExpansionModule,
+    PaginationModule.forRoot()
   ],
   providers: [TravelInfoService],
   bootstrap: [AppComponent]

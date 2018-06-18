@@ -10,7 +10,8 @@ export enum TravelInfoActionTypes {
   SearchByIsFreeAction = '[TravelInfo] Search By IsFree Action',
   SearchByIsAllDayAction = '[TravelInfo] Search By IsAllDay Action',
   SearchByCategoryAction ='[TravelInfo] Search By Category Action',
-  FilterAttractionsAction = '[TravelInfo] Filter Attractions Action'
+  FilterAttractionsAction = '[TravelInfo] Filter Attractions Action',
+  SetCurrentPageAction = '[TravelInfo] Set Current Page Action'
 }
 
 export class LoadAttractionsAction implements Action {
@@ -56,6 +57,11 @@ export class FilterAttractionsAction implements Action {
   readonly type = TravelInfoActionTypes.FilterAttractionsAction;
 }
 
+export class SetCurrentPageAction implements Action {
+  readonly type = TravelInfoActionTypes.SetCurrentPageAction;
+  constructor(public payload:number){}
+}
+
 
 
 
@@ -68,5 +74,6 @@ SearchByIsAllDayAction |
 SearchByIsFreeAction |
 SearchByLocationAction|
 SearchByKeywordAction |
-FilterAttractionsAction
+FilterAttractionsAction |
+SetCurrentPageAction
 ;
