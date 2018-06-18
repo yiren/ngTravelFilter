@@ -1,4 +1,4 @@
-import { categorys } from './shared/config';
+import { categorys, category } from './shared/config';
 import * as fromTravelActions from './store/actions/travel-info.actions';
 
 import { Component, OnInit, ViewEncapsulation, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
@@ -27,7 +27,7 @@ export class AppComponent implements OnInit, AfterViewInit{
   locations:{id:number, text:string}[];
   filteredResultCount:number;
   chips:{type: string, text: string}[]=[];
-  itemsPerPage=5;
+  itemsPerPage=20;
   @ViewChild('mdkeyword')
   mdkeyword:ElementRef;
   @ViewChild('xskeyword')
@@ -197,7 +197,9 @@ export class AppComponent implements OnInit, AfterViewInit{
   }
 
   getCategory(id){
-    return categorys.find((c)=>c.id == parseInt(id,10)).text
+    
+   // console.log(id);
+    return category[id]
   }
 
   clearFilterByTag(chip:{type:string, text:string}){
